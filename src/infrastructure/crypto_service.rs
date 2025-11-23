@@ -28,8 +28,8 @@ impl ConsoleError for CryptoError {
 #[derive(Clone)]
 pub struct AesCtrCryptoService {
     key: [u8; 32],
-    iv: [u8; 16], // текущий IV (для нового шифрования/прочитан из файла при дешифр.)
-    cipher: Option<Aes256Ctr>, // хранит состояние CTR между чанками
+    iv: [u8; 16],
+    cipher: Option<Aes256Ctr>,
     is_first_chunk: bool,
 }
 

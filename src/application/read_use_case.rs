@@ -1,9 +1,5 @@
-use std::fmt::format;
-
-use crate::domain::models::{Command, CommandError, Credentials};
-use crate::domain::services::{
-    BaseActions, ConsoleError, CryptoService, FileService, TerminalService,
-};
+use crate::domain::models::CommandError;
+use crate::domain::services::{BaseActions, CryptoService, FileService, TerminalService};
 
 pub struct ReadUseCase<F, C, T> {
     is_first_chunk: bool,

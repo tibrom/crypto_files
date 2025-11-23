@@ -83,6 +83,7 @@ mod tests {
     use super::*;
     use crate::infrastructure::terminal_service::Terminal;
 
+    // Проверяем что все команды к файловой системе были выполнены в правильной последовательности в
     #[test]
     fn test_normal() {
         let mut file_service = MockedFileService::new();

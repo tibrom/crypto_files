@@ -27,4 +27,5 @@ fn main() {
         eprintln!("Ошибка: {}", e.consol_log());
         std::process::exit(1);
     });
+    std::process::exit(0);
 }

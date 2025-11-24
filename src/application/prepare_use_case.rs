@@ -79,11 +79,10 @@ where
 
 #[cfg(test)]
 mod tests {
-    use super::super::mock_service::{MockCryptoService, MockedFileService};
+    use super::super::mock_service::{MockCryptoService, MockTerminal, MockedFileService};
     use super::*;
-    use crate::infrastructure::terminal_service::Terminal;
 
-    // Проверяем что все команды к файловой системе были выполнены в правильной последовательности в
+    // Проверяем что все команды к файловой системе были выполнены в правильной последовательности и данные после шифрования верны
     #[test]
     fn test_normal() {
         let mut file_service = MockedFileService::new();
@@ -93,7 +92,7 @@ mod tests {
         let mut crypto_service = MockCryptoService::new();
         crypto_service.encrypt_chunks = encrypt_chunks.clone();
 
-        let mut use_case = PrepareUseCase::new(file_service, crypto_service, Terminal);
+        let mut use_case = PrepareUseCase::new(file_service, crypto_service, MockTerminal);
         let result = use_case.execute();
 
         let command_called = use_case.file_service.called_method;
@@ -123,16 +122,20 @@ mod tests {
         crypto_service.encrypt_chunks = encrypt_chunks.clone();
         crypto_service.ok_encrypt = false;
 
-        let use_case = PrepareUseCase::new(file_service, crypto_service, Terminal);
+        let mut use_case = PrepareUseCase::new(file_service, crypto_service, MockTerminal);
+
+        let result = use_case.execute();
 
         let command_called = use_case.file_service.called_method;
 
+        assert!(result.is_err());
         assert_eq!(command_called[0], "init_original");
         assert_eq!(command_called[1], "make_temp");
         assert_eq!(command_called[2], "read_chunk_original");
         assert_eq!(command_called[3], "revert");
     }
 
+    //Проверяем, что в случае ошибки записи вызывается revert
     #[test]
     fn write_error() {
         let mut file_service = MockedFileService::new();
@@ -144,10 +147,13 @@ mod tests {
         let mut crypto_service = MockCryptoService::new();
         crypto_service.encrypt_chunks = encrypt_chunks.clone();
 
-        let use_case = PrepareUseCase::new(file_service, crypto_service, Terminal);
+        let mut use_case = PrepareUseCase::new(file_service, crypto_service, MockTerminal);
+
+        let result = use_case.execute();
 
         let command_called = use_case.file_service.called_method;
 
+        assert!(result.is_err());
         assert_eq!(command_called[0], "init_original");
         assert_eq!(command_called[1], "make_temp");
         assert_eq!(command_called[2], "read_chunk_original");

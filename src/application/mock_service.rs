@@ -1,4 +1,4 @@
-use crate::domain::services::{ConsoleError, CryptoService, FileService};
+use crate::domain::services::{ConsoleError, CryptoService, FileService, TerminalService};
 
 pub struct MockError(String);
 
@@ -157,5 +157,24 @@ impl CryptoService for MockCryptoService {
             return Ok(self.is_encrypt);
         }
         Err(MockError::from("MockCryptoService.is_encrypt"))
+    }
+}
+
+pub struct MockTerminal;
+
+impl TerminalService for MockTerminal {
+    fn print_msg(&self, msg: String) {
+        println!("{msg}");
+    }
+    fn print_message_in_line(&self, msg: String) {
+        print!("\x1B[1A\x1B[2K");
+        println!("{msg}");
+    }
+    fn print_error_msg(&self, msg: String) {
+        eprintln!("{msg}");
+    }
+    fn print_chunk(&self, value: Vec<u8>) {
+        let text = String::from_utf8_lossy(&value);
+        print!("{text}");
     }
 }
